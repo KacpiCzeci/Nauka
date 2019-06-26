@@ -1,0 +1,193 @@
+#!/bin/bash
+
+function reset {
+	stop=true
+	player_symbol=
+	computer_symbol=
+	who_first=
+	game_board=( " " " " " " " " " " " " " " " " " ")
+}
+
+function help {
+clear
+echo "================================================================
+Tic Tac Toe by Kacper Trzeciak
+================================================================
+GAME
+    game [-o] or [--options] args ...
+
+DESCRIPTION
+    This is a script template
+    to start any good shell script.
+
+OPTIONS
+    -[o], --[option]  args        Set option.
+                                  
+    -a --again			  Play again. This flag will reset game.
+    -i, --insert [args]           Enter table position, where 
+				  your symbol will be insert.
+    -f, --first [args]            Set who will be first, only:
+				  0 - for player,
+				  1 - for computer.
+    -h/H, --help                  Print this help.
+    -s, --symbol [args] [args]    Enter your(first) and computer(second) 
+				  symbol, which will be displayed.
+    -S --standard [args]	  Set standard symbols:
+				  0 -> player: x, computer: o,
+				  1 -> player: o, computer: x.
+
+EXAMPLE
+    game -i POSITION
+    game --symbol SYMBOL_P SYMBOL_C
+    game -f TABLE_INDEX
+================================================================"
+}
+
+function print_game {
+	echo "${game_board[0]}|${game_board[1]}|${game_board[2]}"
+	echo "-|-|-"
+	echo "${game_board[3]}|${game_board[4]}|${game_board[5]}"
+	echo "-|-|-"
+	echo "${game_board[6]}|${game_board[7]}|${game_board[8]}"
+}
+
+function computer_move {
+	move=$(( RANDOM % 9 ))
+	while [[ ${game_board[move]} != " " ]] ; do
+		move=$(( RANDOM % 9 ))
+	done
+	game_board[move]=$computer_symbol
+}
+
+function check_win {
+	if [[ ${game_board[$1]} == $player_symbol && ${game_board[$2]} == $player_symbol && ${game_board[$3]} == $player_symbol ]];then
+		echo "You won."
+		stop="false"
+	elif [[ ${game_board[$1]} == $computer_symbol && ${game_board[$2]} == $computer_symbol && ${game_board[$3]} == $computer_symbol ]];then
+		echo "He He, you loose xD."
+		stop="false"
+	fi
+}
+
+function check_draw {
+	for i in "${game_board[@]}"
+	do
+		if [[ $i == " " ]]; then
+			return
+		fi
+	done
+	echo "Draw."
+	reset
+} 
+
+function check_game {
+	check_win 0 1 2
+	check_win 3 4 5
+	check_win 6 7 8
+	check_win 0 3 6
+	check_win 1 4 7
+	check_win 2 5 8
+	check_win 0 4 8
+	check_win 2 4 6
+	check_draw 
+}
+
+function player_move {
+	field=$1-1
+	game_board[$field]=$player_symbol
+}
+
+game_board=( " " " " " " " " " " " " " " " " " ")
+play="true"
+stop="true"
+player_symbol=""
+computer_symbol=""
+who_first=""
+
+echo "Tic Tac Toe Game by Kacper Trzeciak"
+print_game
+
+while [[ $play == "true" ]]
+do
+
+	if [[ $who_first == "1" && $computer_symbol ]]; then
+		computer_move
+		clear
+		print_game
+		check_game
+		who_first=0
+	fi
+
+	read -r cmd f2 f3 f4
+
+	if [[ $cmd == "game" ]]; then
+		case $f2 in
+			-a | --again)
+				clear
+				reset
+				echo "Tic Tac Toe Game by Kacper Trzeciak"
+				print_game
+			;;
+			-i | --insert)
+				if [[ $stop == false ]]; then
+					echo "You need to restart game first."
+				elif [[ $who_first && $player_symbol && $computer_symbol ]]; then
+					player_move $f3
+					clear
+					print_game
+					check_game
+					if [[ $stop == true ]];then
+						computer_move
+						clear
+						print_game
+						check_game
+					fi
+				else 
+					echo "You haven't set all parameters yet."
+				fi					
+          		;;
+      			-h | -H | --help)
+          			help
+          		;;
+      			-f | --first)
+				if [[ $who_first && ( $f3 == "0" || $f3 == "1" ) ]]; then
+					echo "You can't change order during game."
+				elif [[ -z $who_first && ( $f3 == "0" || $f3 == "1" ) ]]; then
+					who_first=$f3						
+				else
+					echo "Wrong option, please read help first."
+				fi
+					
+           		;;
+			-s | --symbol)
+				if [[ -z $player_symbol && -z $computer_symbol ]]; then
+					player_symbol=$f3
+					computer_symbol=$f4
+				elif [[ $player_symbol && $computer_symbol  ]]; then
+					echo "You can't change symbols during game." 
+				fi
+			;;
+			-S | --standard)
+				if [[ -z $player_symbol && -z $computer_symbol && $f3 == "0" ]]; then
+					player_symbol="x"
+					computer_symbol="o"
+				elif [[ -z $player_symbol && -z $computer_symbol && $f3 == "1" ]]; then
+					player_symbol="o"
+					computer_symbol="x"
+				elif [[ $player_symbol && $computer_symbol ]]; then
+					echo "You can't change symbols during game." 
+				else
+					echo "Wrong option, please read help first."
+				fi
+           		;;
+			-q | --quit)
+				play="false"
+			;;
+      			*)
+          			echo "Error: Unknown option: $f2."
+          		;;
+		esac
+	else
+		echo "Use: game -h/-H/--help for help."
+	fi
+done
