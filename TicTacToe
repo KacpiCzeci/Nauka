@@ -63,17 +63,6 @@ function print_game {
 	echo "${game_board[6]}|${game_board[7]}|${game_board[8]}"
 }
 
-function computer_move {
-	move=$(( RANDOM % 9 ))
-	while [[ ${game_board[move]} != " " ]] ; do
-		move=$(( RANDOM % 9 ))
-	done
-	game_board[move]=$computer_symbol
-	clear
-	print_game
-	check_game
-}
-
 function check_win {
 	if [[ ${game_board[$1]} == $player_symbol && ${game_board[$2]} == $player_symbol && ${game_board[$3]} == $player_symbol ]];then
 		echo "You won."
@@ -110,6 +99,17 @@ function check_game {
 function player_move {
 	field=$1-1
 	game_board[$field]=$player_symbol
+	clear
+	print_game
+	check_game
+}
+
+function computer_move {
+	move=$(( RANDOM % 9 ))
+	while [[ ${game_board[move]} != " " ]] ; do
+		move=$(( RANDOM % 9 ))
+	done
+	game_board[move]=$computer_symbol
 	clear
 	print_game
 	check_game
@@ -159,6 +159,10 @@ do
 					echo "You haven't set all parameters yet."
 				fi					
           		;;
+			-d | --display)
+				clear
+				print_game
+			;;
       			-h | -H | --help)
           			help
           		;;
@@ -166,7 +170,8 @@ do
 				if [[ $who_first && ( $f3 == "0" || $f3 == "1" ) ]]; then
 					echo "You can't change order during game."
 				elif [[ -z $who_first && ( $f3 == "0" || $f3 == "1" ) ]]; then
-					who_first=$f3						
+					who_first=$f3
+					echo "Ok."						
 				else
 					echo "Wrong option, please read help first."
 				fi
@@ -176,6 +181,7 @@ do
 				if [[ -z $player_symbol && -z $computer_symbol ]]; then
 					player_symbol=$f3
 					computer_symbol=$f4
+					echo "Ok."
 				elif [[ $player_symbol && $computer_symbol  ]]; then
 					echo "You can't change symbols during game." 
 				fi
@@ -184,9 +190,11 @@ do
 				if [[ -z $player_symbol && -z $computer_symbol && $f3 == "0" ]]; then
 					player_symbol="x"
 					computer_symbol="o"
+					echo "Ok."
 				elif [[ -z $player_symbol && -z $computer_symbol && $f3 == "1" ]]; then
 					player_symbol="o"
 					computer_symbol="x"
+					echo "OK."
 				elif [[ $player_symbol && $computer_symbol ]]; then
 					echo "You can't change symbols during game." 
 				else
