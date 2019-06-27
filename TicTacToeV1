@@ -57,9 +57,6 @@ function computer_move {
 		move=$(( RANDOM % 9 ))
 	done
 	game_board[move]=$computer_symbol
-	clear
-	print_game
-	check_game
 }
 
 function check_win {
@@ -98,9 +95,6 @@ function check_game {
 function player_move {
 	field=$1-1
 	game_board[$field]=$player_symbol
-	clear
-	print_game
-	check_game
 }
 
 game_board=( " " " " " " " " " " " " " " " " " ")
@@ -118,6 +112,9 @@ do
 
 	if [[ $who_first == "1" && $computer_symbol ]]; then
 		computer_move
+		clear
+		print_game
+		check_game
 		who_first=0
 	fi
 
@@ -135,13 +132,15 @@ do
 				if [[ $stop == false ]]; then
 					echo "You need to restart game first."
 				elif [[ $who_first && $player_symbol && $computer_symbol ]]; then
-					if [[ $f3 -gt 0 && $f3 -lt 10 && ${game_board[ $(( $f3 - 1 )) ]} == " " ]]; then
-							player_move $f3
-						if [[ $stop == true ]];then
-							computer_move
-						fi
-					else
-						echo "You can't insert here."
+					player_move $f3
+					clear
+					print_game
+					check_game
+					if [[ $stop == true ]];then
+						computer_move
+						clear
+						print_game
+						check_game
 					fi
 				else 
 					echo "You haven't set all parameters yet."
