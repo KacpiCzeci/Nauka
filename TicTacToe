@@ -17,21 +17,33 @@ GAME
     game [-o] or [--options] args ...
 
 DESCRIPTION
-    This is a script template
-    to start any good shell script.
+    This is a TicTacToe game.
+    To start, you need to set all
+    parameters and insert your 
+    symbol on a game board.
+    The goal of is to be the first 
+    player to get three in a row 
+    on a 3 x 3 grid.
 
 OPTIONS
     -[o], --[option]  args        Set option.
                                   
     -a --again			  Play again. This flag will reset game.
+
     -i, --insert [args]           Enter table position, where 
 				  your symbol will be insert.
+
     -f, --first [args]            Set who will be first, only:
 				  0 - for player,
-				  1 - for computer.
+			  	  1 - for computer.
+
+    -d, --display		  Display game board.
+
     -h/H, --help                  Print this help.
+
     -s, --symbol [args] [args]    Enter your(first) and computer(second) 
 				  symbol, which will be displayed.
+
     -S --standard [args]	  Set standard symbols:
 				  0 -> player: x, computer: o,
 				  1 -> player: o, computer: x.
